@@ -351,3 +351,41 @@ svr_isemptystr <- function( string ) {
     return( FALSE )
 }
 
+
+svr_pivot_longer <- function(
+    df,
+    select_vars = everything(),
+    keep_categories = NULL,
+    dropna = FALSE,
+    var_labels = NULL,
+    category_labels = NULL
+) {
+
+    df.long <- df %>%
+        select( {{ select_vars }} ) %>%
+        pivot_longer(
+            cols = everything()
+        )
+
+    if( !is.null( keep_categories ) ) {
+        df.long <- df.long %>%
+            mutate( value = factor( value, levels = keep_categories ) )
+    }
+
+    if( dropna ) {
+        df.long <- df.long %>% drop_na()
+    }
+
+    if( !is.null( var_labels ) ) {
+        df.long <- df.long %>%
+            mutate( name = recode( name, !!!var_labels ) )
+    }
+
+    if( !is.null( category_labels ) ) {
+        df.long <- df.long %>%
+            mutate( value = recode( value, !!!category_labels ) )
+    }
+
+    df.long
+}
+

@@ -82,6 +82,19 @@ svr_create_plots <- function(
 }
 
 
+# Internal function for getting labels for the
+# percentage bar plot in the right language
+svr_get_percentagelabel <- function(
+    lang = 'en'
+) {
+    lbl = list(
+        'en' = 'Percentage',
+        'fi' = 'Prosenttiosuus'
+    )
+    lbl[[lang]]
+}
+
+
 svr_theme <- function() {
 
     theme_minimal() +
@@ -93,7 +106,7 @@ svr_theme <- function() {
 }
 
 
-svr_theme_v_varnames <- function() {
+svr_theme_vertical <- function() {
 
     svr_theme() +
 
