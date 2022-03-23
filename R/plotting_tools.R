@@ -116,3 +116,80 @@ svr_theme_vertical <- function() {
 }
 
 
+svr_add_linebreaks <- function(
+    label,
+    max_nof_rows = 3,
+    max_row_length = 20,
+    ellipsis = '..'
+) {
+
+    # Split the label into words
+    words <- str_split( label, ' ', simplify = TRUE )
+
+    # Ensure that all words are shorter than the max row length + "\n"
+    words <- lapply(
+        words,
+        str_trunc,
+        width = max_row_length - 2,
+        side = 'right',
+        ellipsis = ellipsis
+    )
+
+    rows <- vector( mode = 'list', length = max_nof_rows )
+    row_no <- 1
+    word_no <- 1
+
+    for( word in words ) {
+
+        # The row is still empty -> add the word
+        if( is.null( rows[[row_no]] ) ) {
+            rows[[row_no]] <- word
+
+            # The row has words
+        } else {
+
+            # The word does not fit into the row
+            if( nchar( rows[[row_no]] ) +
+                nchar( word ) + 2 > max_row_length ) {
+
+                # Increment the row number
+                row_no <- row_no + 1
+
+                # Reached the max nof rows
+                if( row_no > max_nof_rows ) {
+
+                    # Add ellipsis all words don't fit
+                    if( word_no <= length( words ) ) {
+                        rows[[row_no-1]] <- paste0(
+                            rows[[row_no-1]], ellipsis
+                        )
+                        # Ensure that the row length does not exceed max
+                        rows[[row_no-1]] <- str_trunc(
+                            rows[[row_no-1]], width = max_row_length,
+                            side = 'right', ellipsis = ellipsis
+                        )
+                    }
+
+                    break # out of the loop
+                }
+
+                # Add the row to the next row
+                rows[[row_no]] <- word
+
+            # The word fits
+            } else {
+
+                # Paste the word at the end of the row
+                rows[[row_no]] <- paste0( rows[[row_no]], ' ', word )
+            }
+
+        }
+
+        # Increment the word number
+        word_no <- word_no + 1
+    }
+
+    # Paste non-NULL (compact) rows together with a line break
+    paste( compact( rows ), collapse = '\n' )
+}
+
