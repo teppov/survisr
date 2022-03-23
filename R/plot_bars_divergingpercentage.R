@@ -13,7 +13,7 @@ svr_plot_bars_divergingpercentage <- function(
     hline_color = 'gray95',
     plot_title = '',
     legend_title = '',
-    reverse_legend = TRUE,
+    reverse_legend = FALSE,
     bar_width = 0.75,
     lang = 'en'
 ) {
