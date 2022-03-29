@@ -186,7 +186,7 @@ svr_set_df_dtypes <- function(
 
         if( dtype == 'categorical' ) {
             cats <- deframe(
-                categories[[varname]][c( 'name', 'mapping' )]
+                categories[[varname]][c( 'categoryname', 'mapping' )]
             )
         }
 

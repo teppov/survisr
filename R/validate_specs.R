@@ -14,12 +14,6 @@ svr_validate_specs <- function(
     colornames <- svr_get_unique( specs$categories, colorname )
     # Get the unique category set names from the category specs
     categorysetnames <- svr_get_unique( specs$categories, categoryset )
-    # Get the unique rule set names from the rule specs
-    if( !is.null( specs$rules ) ) {
-        rulesets <- svr_get_unique( specs$rules, ruleset )
-    } else {
-        rulesets <- list()
-    }
 
     # Define the rules
     rules_setup <- validator(
@@ -33,7 +27,7 @@ svr_validate_specs <- function(
     )
     rules_categories <- validator(
         categoryset_notna = !is.na( categoryset ),
-        name_notna = !is.na( name ),
+        categoryname_notna = !is.na( categoryname ),
         colortable_valid = colortable %in% spec_excel_sheetnames,
         colorname_valid = colorname %in% colornames
     )

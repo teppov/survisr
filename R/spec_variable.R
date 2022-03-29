@@ -70,58 +70,26 @@ variables <- tibble(
         'k25_9'
     ),
     plotlabel = c(
-'Year',
-'Age',
-'Gender',
-'Regular working hours per week',
-'Employer sector',
-'Location of the workplace',
-'Number of people in the workplace',
-'Too many tasks
-to carry out at the workplace
-compared to the
-number of employees',
-'In the workplace,
-people are well informed
-and kept up to date
-about things',
-'In the workplace,
-employees are
-treated fairly',
-'One can be certain
-that the job is secure',
-'Work is physically
-very demanding',
-'Work is mentally
-very demanding',
-'Possibility next year
-for being laid off
-for at least two weeks',
-'Possibility next year
-for being dismissed',
-'Change in working life
-in terms of
-meaningfulness of work',
-'Change in working life
-in terms of
-being kept up to date
-about the future plans
-of the workplace',
-"Change in working life
-in terms of
-opportunities to develop
-one's competence
-and skills at work",
-'Change in working life
-in terms of
-opportunities to influence
-own status and
-tasks at work',
-'Change in the
-financial situation
-of the workplace',
-'Grade from 0 to 10
-of the financial situation
-of the workplace'
+        'Year',
+        'Age',
+        'Gender',
+        'Regular working hours per week',
+        'Employer sector',
+        'Location of the workplace',
+        'Number of people in the workplace',
+        'Too many tasks to carry out at the workplace compared to the number of employees',
+        'In the workplace, people are well informed and kept up to date about things',
+        'In the workplace, employees are treated fairly',
+        'One can be certain that the job is secure',
+        'Work is physically very demanding',
+        'Work is mentally very demanding',
+        'Possibility next year for being laid off for at least two weeks',
+        'Possibility next year for being dismissed',
+        'Change in working life in terms of meaningfulness of work',
+        'Change in working life in terms of being kept up to date about the future plans of the workplace',
+        "Change in working life in terms of opportunities to develop one's competence and skills at work",
+        'Change in working life in terms of opportunities to influence own status and tasks at work',
+        'Change in the financial situation of the workplace',
+        'Grade from 0 to 10 of the financial situation of the workplace'
     )
 )

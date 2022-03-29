@@ -49,8 +49,11 @@ svr_conform_df <- function(
     dtypes,
     categories,
     rename_tolower = TRUE,
-    addmissingcolumns = TRUE,
-    fun_addmetadata = function( df, arg ) { df },
+    add_missingcols = TRUE,
+    drop_undefinedcols = TRUE,
+    fun_addmetadata = function( df, nameindex ) {
+        df %>% mutate( dataset_name = nameindex )
+    },
     fun_arg = NULL
 ) {
 
@@ -61,28 +64,36 @@ svr_conform_df <- function(
             rename_with( tolower )
     }
 
-    if( addmissingcolumns ) {
+    if( add_missingcols ) {
         df <- df %>%
             svr_add_missing_columns( column_names = col_names )
     } else {
         col_names <- col_names[col_names %in% names( df )]
     }
 
-    df %>%
-
-        # Set the names to the defined variable names
+    # Set the names to the defined variable names
+    df<- df %>%
         setnames(
             old = col_names,
             new = names( col_names ),
             # If "missing" columns not added, skip absent names
-            skip_absent = !addmissingcolumns
-        ) %>%
+            skip_absent = !add_missingcols
+        )
+
+    if( drop_undefinedcols ) {
 
         # Select only defined variables
-        select( all_of( names( col_names ) ) ) %>%
+        df <- df %>%
+            select( all_of( names( col_names ) ) )
+    }
 
-        # Apply the metadata function
-        fun_addmetadata( fun_arg ) %>%
+    if( !is.null( fun_addmetadata ) ) {
+        df <- df %>%
+            # Apply the metadata function
+            fun_addmetadata( fun_arg )
+    }
+
+    df %>%
 
         # TODO: add validate_df()
 
@@ -98,8 +109,11 @@ svr_conform_df <- function(
 svr_conform_df_to_specs <- function(
     df,
     specs,
-    addmissingcolumns = TRUE,
-    fun_addmetadata = function( df, nameindex ) { df },
+    add_missingcols = TRUE,
+    drop_undefinedcols = TRUE,
+    fun_addmetadata = function( df, nameindex ) {
+        df %>% mutate( dataset_name = nameindex )
+    },
     fun_arg = NULL
 ) {
 
@@ -117,7 +131,8 @@ svr_conform_df_to_specs <- function(
             col_names = col_names,
             dtypes = dtypes,
             categories = categories,
-            addmissingcolumns = addmissingcolumns,
+            add_missingcols = add_missingcols,
+            drop_undefinedcols = drop_undefinedcols,
             fun_addmetadata = fun_addmetadata,
             fun_arg = fun_arg
         )
@@ -129,16 +144,22 @@ svr_edit_dflistitem <- function(
     col_names,
     dtypes,
     categories,
-    fun_addmetadata = function( df, nameindex ) { df }
+    add_missingcols = TRUE,
+    drop_undefinedcols = TRUE,
+    fun_addmetadata = function( df, nameindex ) {
+        df %>% mutate( dataset_name = nameindex )
+    }
 ) {
 
     # Access an item in the list with the name
     list[[nameindex]] %>%
 
-        conform_df(
+        svr_conform_df(
             col_names = col_names,
             dtypes = dtypes,
             categories = categories,
+            add_missingcols = add_missingcols,
+            drop_undefinedcols = drop_undefinedcols,
             fun_addmetadata = fun_addmetadata,
             fun_arg = nameindex
         )
@@ -148,7 +169,11 @@ svr_edit_dflistitem <- function(
 svr_conform_dflist_to_specs <- function(
     df_list,
     specs,
-    fun_addmetadata = function( df, nameindex ) { df }
+    add_missingcols = TRUE,
+    drop_undefinedcols = TRUE,
+    fun_addmetadata = function( df, nameindex ) {
+        df %>% mutate( dataset_name = nameindex )
+    }
 ) {
 
     # Adapted from an SO answers by
@@ -173,13 +198,15 @@ svr_conform_dflist_to_specs <- function(
         setNames( list_names, list_names ),
 
         # The function to apply
-        edit_dflistitem,
+        svr_edit_dflistitem,
 
         # Pass parameters to the function
         list = df_list,
         col_names = col_names,
         dtypes = dtypes,
         categories = categories,
+        add_missingcols = add_missingcols,
+        drop_undefinedcols = drop_undefinedcols,
         fun_addmetadata = fun_addmetadata
     )
 }

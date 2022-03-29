@@ -1,5 +1,24 @@
-svr_langs <- c( 'fi', 'en' )
 
+# Check that all sheets can be found in the Excel
+svr_is_sheet_in_sheetnames <- function(
+    sheetnames,
+    valid_sheetnames,
+    sheettype
+) {
+
+    valid_names <- sheetnames %in% valid_sheetnames
+
+    if( !all( valid_names ) ) {
+        stop( paste0(
+            'In setup, all of the given ', sheettype, ' sheet names ',
+            'not found within the Excel sheets: ',
+            paste(
+                sheetnames[!valid_names],
+                collapse = ', '
+            )
+        ) )
+    }
+}
 
 svr_read_spec_excel <- function(
     spec_path,
@@ -13,24 +32,32 @@ svr_read_spec_excel <- function(
     print( 'The spec Excel contains the sheets:' )
     print( paste( spec_excel_sheetnames, collapse = ', ' ) )
 
-    # Read the setup from the first sheet (the default)
+
+    # Setup
+    #############################################
+
+    # Read the setup from the first sheet
     specs$setup <- read_excel(
         path = spec_path,
         col_types = 'text'
     ) %>%
-        # Keep only rows where vartable is not NA
-        filter( !is.na( vartable ) )
+        # Keep only rows where tablename is not NA
+        filter( !is.na( tablename ) )
+
+
+    # Variables
+    #############################################
 
     # Get the variable sheet names from the setup table
     variable_sheetnames <- specs$setup %>%
-        pull( vartable )
-    if( ! all( variable_sheetnames %in% spec_excel_sheetnames ) ) {
-        names_str <- paste( variable_sheetnames, collapse = ', ' )
-        stop( paste0(
-            'In setup::vartable, not all of the given sheet names
-            found within the Excel sheets: ', names_str
-        ) )
-    }
+        filter( tabletype == 'variable' ) %>%
+        pull( tablename )
+    # Check that all sheets can be found in the Excel
+    svr_is_sheet_in_sheetnames(
+        sheetnames = variable_sheetnames,
+        valid_sheetnames = spec_excel_sheetnames,
+        sheettype = 'variable'
+    )
 
     # Read all variable sheets from the spec Excel
     # into a single data frame
@@ -41,15 +68,17 @@ svr_read_spec_excel <- function(
         meta_varname = 'vartable'
     )
 
+
+    # Categories
+    #############################################
+
     # Get the (unique) category table names from the variable table
     category_sheetnames <- svr_get_unique( specs$variables, categorytable )
-    if( ! all( category_sheetnames %in% spec_excel_sheetnames ) ) {
-        names_str <- paste( category_sheetnames, collapse = ', ' )
-        stop( paste0(
-            'In variables::categorytable, not all of the given
-            sheet names found within the Excel sheets: ', names_str
-        ) )
-    }
+    svr_is_sheet_in_sheetnames(
+        sheetnames = category_sheetnames,
+        valid_sheetnames = spec_excel_sheetnames,
+        sheettype = 'category'
+    )
 
     # Read all category sheets from the spec Excel
     # into a single data frame
@@ -60,15 +89,17 @@ svr_read_spec_excel <- function(
         meta_varname = 'categorytable'
     )
 
+
+    # Colours
+    #############################################
+
     # Get the (unique) color sheet names from the category table
     color_sheetnames <- svr_get_unique( specs$categories, colortable )
-    if( ! all( color_sheetnames %in% spec_excel_sheetnames ) ) {
-        names_str <- paste( color_sheetnames, collapse = ', ' )
-        stop( paste0(
-            'In categories::colortable, not all of the given
-            sheet names found within the Excel sheets: ', names_str
-        ) )
-    }
+    svr_is_sheet_in_sheetnames(
+        sheetnames = color_sheetnames,
+        valid_sheetnames = spec_excel_sheetnames,
+        sheettype = 'color'
+    )
 
     # Read all color sheets from the spec Excel
     # into a single data frame
@@ -86,26 +117,35 @@ svr_read_spec_excel <- function(
             by = c( 'colortable', 'colorname' )
         )
 
-    # Get the (unique) rule sheet names from the variable table
-    rules_sheetnames <- svr_get_unique( specs$variables, ruletable )
+
+    # Rules
+    #############################################
+
+    # Get the rule sheet names from the setup table
+    rules_sheetnames <- specs$setup %>%
+        filter( tabletype == 'rule' ) %>%
+        pull( tablename )
     if( length( rules_sheetnames ) > 0 ) {
-        if( ! all( rules_sheetnames %in% spec_excel_sheetnames ) ) {
-            names_str <- paste( rules_sheetnames, collapse = ', ' )
-            stop( paste0(
-                'In variables::ruletable, not all of the given
-            sheet names found within the Excel sheets: ', names_str
-            ) )
-        }
+        # Check that all sheets can be found in the Excel
+        svr_is_sheet_in_sheetnames(
+            sheetnames = rules_sheetnames,
+            valid_sheetnames = spec_excel_sheetnames,
+            sheettype = 'rules'
+        )
         # Read all rule sheets from the spec Excel into a single data frame
         specs$rules <- svr_read_excel_sheets(
             path = spec_path,
             sheetnames = rules_sheetnames,
-            non_na_col = 'ruleset',
+            non_na_col = 'rulename',
             meta_varname = 'ruletable'
         )
     } else {
         specs$rules <- NULL
     }
+
+
+    # Validate specs
+    #############################################
 
     if( validate ) {
         validation <- svr_validate_specs( specs )
@@ -125,7 +165,7 @@ svr_read_spec_excel <- function(
 }
 
 
-create_category_spec_list <- function(
+svr_create_category_spec_list <- function(
     specs,
     lang = 'en'
 ) {
@@ -156,7 +196,7 @@ create_category_spec_list <- function(
                 # Create a new variable with values in the chosen language
                 mutate( plotlabel = .data[[plotlabel_str]] ) %>%
                 # Drop unnecessary columns
-                select( name, mapping, plotlabel, colorhex )
+                select( categoryname, mapping, plotlabel, colorhex )
 
         }
     )
@@ -167,7 +207,7 @@ create_category_spec_list <- function(
 }
 
 
-get_col_type <- function( data_type ) {
+svr_get_col_type <- function( data_type ) {
 
     if( isTRUE( data_type == 'integer' ) ) {
         return( col_integer() )
@@ -181,7 +221,7 @@ get_col_type <- function( data_type ) {
 }
 
 
-get_col_types <- function( specs ) {
+svr_get_col_types <- function( specs ) {
 
     # Initialize col types
     col_types <- cols_only()

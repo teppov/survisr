@@ -35,7 +35,7 @@ svr_create_validation <- function( specs ) {
         # Get the category values of the current category set
         category_names <- specs$categories %>%
             filter( categoryset == categoryset_name ) %>%
-            pull( name )
+            pull( categoryname )
 
         # Add rows to the `validator_rules` data frame
         validator_rules <- validator_rules %>%
@@ -106,38 +106,44 @@ svr_create_validation <- function( specs ) {
     # Other rules
     #############
 
-    # Create a data frame with only variables with other rules
-    rule_vars <- specs$variables %>%
-        select( varname, ruleset ) %>%
-        filter( !is.na( ruleset ) )
+    rules <- specs$rules %>%
+        rename( name = rulename )
 
-    # Loop over all variables with rules
-    for( varname in rule_vars$varname ) {
+    validator_rules <- validator_rules %>%
+        bind_rows( rules )
 
-        # Get the name of the rule set from the `rule_vars` data frame
-        ruleset_name <- rule_vars[rule_vars$varname==varname, ]$ruleset
+    # # Create a data frame with only variables with other rules
+    # rule_vars <- specs$variables %>%
+    #     select( varname, ruleset ) %>%
+    #     filter( !is.na( ruleset ) )
+    #
+    # # Loop over all variables with rules
+    # for( varname in rule_vars$varname ) {
+    #
+    #     # Get the name of the rule set from the `rule_vars` data frame
+    #     ruleset_name <- rule_vars[rule_vars$varname==varname, ]$ruleset
+    #
+    #     # Create a data frame with only the rows of the current rule set
+    #     ruleset_df <- specs$rules %>%
+    #         filter( ruleset == ruleset_name )
+    #
+    #     # Initialize an index for naming the rules
+    #     i = 1
+    #
+    #     # Loop over all rule templates in the created `ruleset_df` data frame
+    #     for( rule in ruleset_df$rule ) {
+    #
+    #         # Add rows to the `validator_rules` data frame
+    #         validator_rules <- validator_rules %>%
+    #             add_row(
+    #                 name = paste0( varname, '_r', i ),
+    #                 rule = rule
+    #             )
+    #
+    #         i <- i + 1
+    #     }
+    # }
 
-        # Create a data frame with only the rows of the current rule set
-        ruleset_df <- specs$rules %>%
-            filter( ruleset == ruleset_name )
-
-        # Initialize an index for naming the rules
-        i = 1
-
-        # Loop over all rule templates in the created `ruleset_df` data frame
-        for( rule in ruleset_df$rule ) {
-
-            # Add rows to the `validator_rules` data frame
-            validator_rules <- validator_rules %>%
-                add_row(
-                    name = paste0( varname, '_r', i ),
-                    rule = rule
-                )
-
-            i <- i + 1
-        }
-    }
-
-    validator_rules
+    validator( .data = arrange( validator_rules, name ) )
 }
 
