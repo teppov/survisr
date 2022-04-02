@@ -1,18 +1,15 @@
 
 
-svr_plot_histograms <- function(
-    df,
-    varnames,
+svr_plot_histogram <- function(
+    df.singlevar,
     binwidth = NULL
 ) {
 
-    df %>%
-
-        select( all_of( varnames ) ) %>%
+    df.singlevar %>%
 
         pivot_longer( cols = everything() ) %>%
 
-        # Create plot by mapping height to the x axis
+        # Create plot by mapping value to the x axis
         ggplot( mapping = aes( x = value ) ) +
 
         # Plot the histogram
@@ -23,19 +20,33 @@ svr_plot_histograms <- function(
             color = 'black'
         ) +
 
-        facet_wrap(
-            ~name,
-            scales = 'free',
-            ncol = 1,
-            strip.position = 'bottom'
-        ) +
-
         # Remove visual clutter from the plot
-        theme_minimal() +
+        theme_minimal()
+}
 
-        theme(
-            # Remove the x axis labels
-            axis.title.x = element_blank()
-        )
+
+svr_plot_histogram_facet <- function(
+    df,
+    varnames,
+    binwidth = NULL
+) {
+
+    df %>%
+
+        select( all_of( varnames ) ) %>%
+
+        svr_plot_histogram( binwidth = binwidth ) +
+
+            facet_wrap(
+                ~name,
+                scales = 'free',
+                ncol = 1,
+                strip.position = 'bottom'
+            ) +
+
+            theme(
+                # Remove the x axis labels
+                axis.title.x = element_blank()
+            )
 }
 

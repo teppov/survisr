@@ -1,14 +1,10 @@
 
 
-svr_plot_bars_factorcounts <- function(
-    df,
-    varnames
+svr_plot_bars_factorcount <- function(
+    df.singlevar
 ) {
 
-    df %>%
-
-        # Select all categorical variables
-        select( all_of( varnames ) ) %>%
+    df.singlevar %>%
 
         # Handle everything as integers to get all to the same scale
         mutate( across( everything(), as.integer ) ) %>%
@@ -34,6 +30,8 @@ svr_plot_bars_factorcounts <- function(
         # Remove unnecessary breaks from the y axis
         scale_y_continuous( breaks = NULL ) +
 
+        labs( x = 'Category level' ) +
+
         # Remove visual clutter from the plot
         theme_minimal() +
 
@@ -42,6 +40,27 @@ svr_plot_bars_factorcounts <- function(
             axis.title.y = element_blank(),
             # Rotate the y axis tick labels horizontally
             strip.text.y.left = element_text( angle = 0 )
+        )
+}
+
+
+svr_plot_bars_factorcount_facet <- function(
+    df,
+    varnames
+) {
+
+    df %>%
+
+        # Select all categorical variables
+        select( all_of( varnames ) ) %>%
+
+        svr_plot_bars_factorcount() +
+
+        # Show the distribution of responses in rows
+        facet_grid(
+            rows = 'name',
+            # Switch the y tick labels to the right side
+            switch = 'y'
         )
 }
 
