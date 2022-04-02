@@ -3,7 +3,7 @@
 svr_plot_histograms <- function(
     df,
     varnames,
-    binwidth = 5
+    binwidth = NULL
 ) {
 
     df %>%
@@ -23,9 +23,19 @@ svr_plot_histograms <- function(
             color = 'black'
         ) +
 
-        facet_grid( rows = 'name' ) +
+        facet_wrap(
+            ~name,
+            scales = 'free',
+            ncol = 1,
+            strip.position = 'bottom'
+        ) +
 
         # Remove visual clutter from the plot
-        theme_minimal()
+        theme_minimal() +
+
+        theme(
+            # Remove the x axis labels
+            axis.title.x = element_blank()
+        )
 }
 
