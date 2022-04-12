@@ -118,7 +118,7 @@ svr_conform_df_to_specs <- function(
 ) {
 
     dtypes <- deframe( specs$variables[c( 'varname', 'datatype' )] )
-    categories <- create_category_spec_list( specs )
+    categories <- svr_create_category_spec_list( specs )
 
     # Get the non-NA mapping rows and name them with the variable name
     col_names <- specs$variables %>%
