@@ -210,3 +210,28 @@ svr_conform_dflist_to_specs <- function(
         fun_addmetadata = fun_addmetadata
     )
 }
+
+
+svr_read_excel_data_sheet <- function(
+    path,
+    specs,
+    sheetname = NULL,
+    non_na_col = NULL,
+    col_types = 'text',
+    meta_varname = 'META__EXCELSHEET'
+
+) {
+
+    svr_read_excel_sheet(
+        path = path,
+        sheetname = sheetname,
+        non_na_col = non_na_col,
+        meta_varname = meta_varname
+    ) %>%
+        svr_conform_df_to_specs(
+            specs = specs
+        )
+}
+
+
+
