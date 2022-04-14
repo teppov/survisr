@@ -86,6 +86,19 @@ svr_mode <- function( x, as_string = FALSE ) {
 }
 
 
+svr_mean <- function(
+    values,
+    max_prop_na = 1/3
+) {
+
+    if( sum( is.na( values ) ) / length( values ) > max_prop_na ) {
+        return( NA )
+    }
+
+    mean( values, na.rm = TRUE )
+}
+
+
 #' Add missing columns to a data frame.
 #'
 svr_add_missing_columns <- function( df, column_names ) {
