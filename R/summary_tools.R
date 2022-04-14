@@ -78,3 +78,47 @@ svr_summary_cat <- function(
             nmode = sum( value == mode, na.rm = TRUE )
         )
 }
+
+
+svr_calulate_groupvar_aggregates <- function(
+    df,
+    specs,
+    id_varname,
+    filter_specvars,
+    select_datavars,
+    rename_with_datavars,
+    aggr_fun = mean,
+    ...
+) {
+
+    # Get the variable and vargroup names
+    vargroups <- specs$variables %>%
+        filter( {{ filter_specvars }} ) %>%
+        select( varname, vargroup )
+
+    aggr_df <- df %>%
+
+        select( c( all_of( id_varname ), {{ select_datavars }} ) ) %>%
+
+        rename_with( rename_with_datavars ) %>%
+
+        pivot_longer( cols = -all_of( id_varname ), names_to = 'varname' ) %>%
+
+        left_join( vargroups, by = 'varname' ) %>%
+
+        mutate(
+            vargroup = factor( vargroup, levels = unique( vargroups$vargroup ) )
+        ) %>%
+
+        group_by( .data[[ id_varname ]], vargroup ) %>%
+
+        summarise( aggr = aggr_fun( value, ... ) ) %>%
+
+        pivot_wider( names_from = vargroup, values_from = aggr )
+
+    # Join the aggregates to the end of the data frame
+    df %>%
+        left_join( aggr_df, by = id_varname )
+}
+
+
