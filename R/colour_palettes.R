@@ -22,19 +22,9 @@ col_qua15 <- c(
 
 ## ---- colseq11 ----
 
-col_seq11 <- c(
-    '0' = '#fff7fb',
-    '1' = '#ece7f2',
-    '2' = '#d0d1e6',
-    '3' = '#a6bddb',
-    '4' = '#74a9cf',
-    '5' = '#3690c0',
-    '6' = '#0570b0',
-    '7' = '#045a8d',
-    '8' = '#023858',
-    '9' = '#021f33',
-    '10' = '#020f1a'
-)
+col_seq11 <- colorRampPalette( brewer.pal( 9, "PuBu" ) )( 11 )
+names( col_seq11 ) <- as.character( 0:10 )
+col_seq11
 
 
 ## ---- coldiv11 ----
