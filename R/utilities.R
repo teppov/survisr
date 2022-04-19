@@ -232,7 +232,7 @@ svr_get_unique <- function( df, colname ) {
 svr_read_excel_sheet <- function(
     path,
     sheetname = NULL,
-    non_na_col = NULL,
+    id_col = NULL,
     col_types = 'text',
     meta_varname = 'META__EXCELSHEET'
 ) {
@@ -252,8 +252,17 @@ svr_read_excel_sheet <- function(
         df[meta_varname] <- sheetname
     }
 
-    if( !is.null( non_na_col ) ) {
-        df <- filter( df, !is.na( .data[[non_na_col]] ) )
+    if( !is.null( id_col ) ) {
+
+        # If `id_col` found in data, drop rows with NA id's
+        if( id_col %in% names( df ) ) {
+            df <- filter( df, !is.na( .data[[id_col]] ) )
+
+        # Create an ID col
+        } else {
+            df <- df %>%
+                mutate( {{ id_col }} := row_number() )
+        }
     }
 
     df
@@ -264,7 +273,7 @@ svr_read_excel_sheet <- function(
 
 svr_read_excel_sheets <- function(
     path,
-    non_na_col = NULL,
+    id_col = NULL,
     sheetnames = NULL,
     col_types = 'text',
     read_excel_fun = svr_read_excel_sheet,
@@ -276,7 +285,7 @@ svr_read_excel_sheets <- function(
             svr_read_excel_sheet(
                 path = path,
                 sheetname = NULL,
-                non_na_col = non_na_col,
+                id_col = id_col,
                 col_types = col_types,
                 meta_varname = meta_varname
             )
@@ -287,7 +296,7 @@ svr_read_excel_sheets <- function(
         sheetnames,
         read_excel_fun,
         path = path,
-        non_na_col = non_na_col,
+        id_col = id_col,
         col_types = col_types,
         meta_varname = meta_varname
     ) %>%
