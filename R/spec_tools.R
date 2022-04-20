@@ -64,7 +64,7 @@ svr_read_spec_excel <- function(
     specs$variables <- svr_read_excel_sheets(
         path = spec_path,
         sheetnames = variable_sheetnames,
-        non_na_col = 'varname',
+        id_col = 'varname',
         meta_varname = 'vartable'
     )
 
@@ -85,7 +85,7 @@ svr_read_spec_excel <- function(
     specs$categories <- svr_read_excel_sheets(
         path = spec_path,
         sheetnames = category_sheetnames,
-        non_na_col = 'categoryset',
+        id_col = 'categoryset',
         meta_varname = 'categorytable'
     )
 
@@ -106,7 +106,7 @@ svr_read_spec_excel <- function(
     specs$colors <- svr_read_excel_sheets(
         path = spec_path,
         sheetnames = color_sheetnames,
-        non_na_col = 'colorname',
+        id_col = 'colorname',
         meta_varname = 'colortable'
     )
 
@@ -136,7 +136,7 @@ svr_read_spec_excel <- function(
         specs$rules <- svr_read_excel_sheets(
             path = spec_path,
             sheetnames = rules_sheetnames,
-            non_na_col = 'rulename',
+            id_col = 'rulename',
             meta_varname = 'ruletable'
         )
     } else {
