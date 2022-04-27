@@ -198,18 +198,27 @@ svr_set_df_dtypes <- function(
         dtype <- dtypes[[varname]]
 
         if( dtype == 'categorical' ) {
+            if( is.null( categories ) ) {
+                stop( 'Trying to set categories but `categories = NULL` svr_set_df_dtypes()!')
+            }
             cats <- deframe(
                 categories[[varname]][c( 'categoryname', 'mapping' )]
             )
-        }
+            df <- df %>%
+                svr_set_var_dtype(
+                    varname,
+                    dtype,
+                    cat_levels = cats,
+                    cat_labels = names( cats )
+                )
 
-        df <- df %>%
-            svr_set_var_dtype(
-                varname,
-                dtype,
-                cat_levels = cats,
-                cat_labels = names( cats )
-            )
+        } else {
+            df <- df %>%
+                svr_set_var_dtype(
+                    varname,
+                    dtype
+                )
+        }
     }
 
     df
