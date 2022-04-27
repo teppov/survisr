@@ -1,5 +1,7 @@
 
-
+#'
+#' @param df A data frame with two columns, name and value
+#'
 svr_plot_bars_percentage <- function(
     df,
     category_colors = NULL,
@@ -8,10 +10,35 @@ svr_plot_bars_percentage <- function(
     legend_title = '',
     reverse_legend = TRUE,
     bar_width = 0.75,
-    lang = 'en'
+    lang = 'en',
+    namelabel_max_nof_rows = 3,
+    namelabel_max_row_length = 20,
+    namelabel_ellipsis = '..',
+    valuelabel_max_nof_rows = 2,
+    valuelabel_max_row_length = 15,
+    valuelabel_ellipsis = '..'
 ) {
 
+    # Add line breaks if necessary
+    namelabels <- sapply(
+        as.vector( df$name ),
+        svr_add_linebreaks,
+        max_nof_rows = namelabel_max_nof_rows,
+        max_row_length = namelabel_max_row_length,
+        ellipsis = namelabel_ellipsis
+    )
+    # valuelabels <- sapply(
+    #     as.vector( df$value ),
+    #     svr_add_linebreaks,
+    #     max_nof_rows = valuelabel_max_nof_rows,
+    #     max_row_length = valuelabel_max_row_length,
+    #     ellipsis = valuelabel_ellipsis
+    # )
+
     p <- df %>%
+
+        # Use the new labels (with the possible line breaks)
+        mutate( name = recode( name, !!!namelabels ) ) %>%
 
         # Initialize ggplot by mapping variables to the x axis
         ggplot( mapping = aes( x = name ) ) +
@@ -50,6 +77,12 @@ svr_plot_bars_percentage <- function(
             expand = c( 0, 0 )
         ) +
 
+        # # Adjust fill (values)
+        # scale_fill_manual(
+        #     # Use the new labels (with the possible line breaks)
+        #     labels = valuelabels
+        # ) +
+
         # Modify legend
         guides(
             fill = guide_legend(
@@ -61,7 +94,7 @@ svr_plot_bars_percentage <- function(
 
         # Remove visual clutter from the plot
         # theme_minimal() +
-        svr_theme_v_varnames() +
+        svr_theme_vertical() +
 
         # Flip the coordinates to plot horizontal bars
         coord_flip()
