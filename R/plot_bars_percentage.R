@@ -6,6 +6,7 @@ svr_plot_bars_percentage <- function(
     df,
     category_colors = NULL,
     brewer_palette = 'RdBu',
+    bar_border_col = 'black',
     plot_title = '',
     legend_title = '',
     reverse_legend = TRUE,
@@ -53,7 +54,8 @@ svr_plot_bars_percentage <- function(
             # Scale the bars to 1.0, i.e. show proportions
             position = 'fill',
             # Change the width of the bars
-            width = bar_width
+            width = bar_width,
+            color = bar_border_col
         ) +
 
         # Adjust x axis (variable names)
