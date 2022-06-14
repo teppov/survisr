@@ -1,6 +1,7 @@
 
 svr_validate_specs <- function(
     specs,
+    spec_excel_sheetnames,
     variable_datatypes = c(
         'categorical',
         'integer',
@@ -28,7 +29,7 @@ svr_validate_specs <- function(
     rules_categories <- validator(
         categoryset_notna = !is.na( categoryset ),
         categoryname_notna = !is.na( categoryname ),
-        colortable_valid = colortable %in% spec_excel_sheetnames,
+        # colortable_valid = colortable %in% spec_excel_sheetnames,
         colorname_valid = colorname %in% colornames
     )
     rules_variables <- validator(
@@ -36,7 +37,7 @@ svr_validate_specs <- function(
         varname_unique = all_unique( varname ),
         datatype_valid = datatype %in% variable_datatypes,
         categories_defined = if( datatype == 'categorical' )
-            categorytable %in% spec_excel_sheetnames &
+            # categorytable %in% spec_excel_sheetnames &
             categoryset %in% categorysetnames,
         mapping_unique = all_unique( mapping )
     )
