@@ -1,0 +1,17 @@
+Package: survisr
+Type: Package
+Title: Visualizing and managing survey data
+Version: 0.1.0
+Author: Teppo Valtonen
+Maintainer: Teppo Valtonen <yourself@somewhere.net>
+Description: An R package for Visualizing and managing survey data.
+    In addition to plotting functions, the package specifies
+    a scheme for defining variables. A variable specification
+    can used for documenting surveys and automating survey analysis.
+License: MIT
+Encoding: UTF-8
+LazyData: true
+Imports:
+    tidyverse,
+    readxl,
+    data.table
